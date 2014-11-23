@@ -1,8 +1,8 @@
-#the final tidy data set contains the following columns :
+#the final tidy data set contains the following variables :
 # Activity_Code : integers 1:6 each correcponding to one of the six activities
-#user_id
-#561 features 
-#Activity
+#user_id : integers 1:30 for each user
+#79 mean and stddev features 
+#Activity : one of the six activities
 
 library(reshape2)
 library(plyr)
@@ -51,5 +51,16 @@ newdataset <- newdataset[order(newdataset$user_id,newdataset$Activity_Code),]
 
 newdataset <- merge(newdataset,activity_labels,by="Activity_Code",all=TRUE)
 
-#writing the dataframe
-write.table(newdataset,file="newdataset.txt",row.names=FALSE)
+#subset mean &stddevs
+#partial text compare to get column indices
+
+x <- grep("mean()",colnames(newdataset))
+y <- grep("std()",colnames(newdataset))
+
+#data set with mean and std features
+
+new_mu_sig <- newdataset[,c(1,2,564,x,y)]
+
+#saving the dataframe
+
+write.table(new_mu_sig,file="mydata.txt",row.names=FALSE)

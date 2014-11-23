@@ -1,0 +1,55 @@
+#the final tidy data set contains the following columns :
+# Activity_Code : integers 1:6 each correcponding to one of the six activities
+#user_id
+#561 features 
+#Activity
+
+library(reshape2)
+library(plyr)
+
+#read training and test data set 
+
+x_test <- read.table("X_test.txt")
+y_test <- read.table("y_test.txt")
+subject_test <- read.table("subject_test.txt")
+x_train <- read.table("X_train.txt")
+y_train <- read.table("y_train.txt")
+subject_train <- read.table("subject_train.txt")
+
+#read 561 features and 6 activities 
+
+features <- read.table("features.txt")
+activity_labels <- read.table("activity_labels.txt")
+
+#change colnames for proper identification
+
+colnames(y_test) <- "Activity_Code"                       
+colnames(subject_test) <- "user_id"
+features$V2 <- as.character(features$V2)
+colnames(x_test) <- features$V2
+colnames(y_train) <- "Activity_Code"
+colnames(subject_train) <- "user_id"
+colnames(x_train) <- features$V2
+activity_labels$V2 <- as.character(activity_labels$V2)
+colnames(activity_labels) <- c("Activity_Code","Activity")
+
+#combine features,activities and user_id for training and test dataset
+
+test1 <- cbind(subject_test,x_test)
+test1 <- cbind(test1,y_test)
+train1<- cbind(subject_train,x_train)
+train1 <- cbind(train1,y_train)
+
+#combine test and training dataset to get newdataset
+
+newdataset <- rbind(test1,train1)
+
+#order the dataset wrt user_id and Activity Code
+newdataset <- newdataset[order(newdataset$user_id,newdataset$Activity_Code),] 
+
+#merge newdataset with activity_labels 
+
+newdataset <- merge(newdataset,activity_labels,by="Activity_Code",all=TRUE)
+
+#writing the dataframe
+write.table(newdataset,file="newdataset.txt",row.names=FALSE)
